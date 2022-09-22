@@ -11,82 +11,71 @@ const dotenv = require('dotenv');
 //     return orgIdList[0]
 // }
 
-async function main(mainOrganization) {
-    await getOrgDevicesAll(mainOrganization).then((orgDeviceIdList) => {
-        return orgDeviceIdList
-    }
-    )
-}
 
-
-
-
-async function getOrgDevicesAll(mainOrganization) {
+async function retrieveOrgList(mainOrganization) {
     let orgIdList = [];
-    let orgDeviceIdList = [];
-    await getOrg(mainOrganization).then(orgData => {
+    await getOrg(mainOrganization).then(async (orgData) => {
         for (let i = 0; i < orgData.length; i++) {
             orgIdList.push(orgData[i].id)
         }
-        dotenv.config({path : `../${mainOrganization}.env`
-        })
-        switch (mainOrganization) {
-
-            case 'Internal':
-                try {
-                    axios.all(orgIdList.map(orgId => {
-                        return axios.get(`https://app.ninjarmm.com/v2/organization/${orgId}/devices`, {
-                            headers: {
-                                'Authorization': `Bearer ${process.env.Internal_token}`,
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                    })).then(axios.spread((...responses) => {
-                        let data = responses.map(response => response.data)
-                        for (let i = 0; i < data.length; i++) {
-                            for (let j = 0; j < data[i].length; j++) {
-                                 orgDeviceIdList.push({
-                                    ID: data[i][j].id
-                                 }
-                                )
-
-                            }
-                        }
-                        }
-                    ))
-                    return orgDeviceIdList
-                }
-                catch (err) {
-                    console.log(err)
-                }
-                break;
-            case 'Seviora':
-                try {
-                    axios.all(orgIdList.map(orgId => {
-                        return axios.get(`https://oc.ninjarmm.com/v2/organization/${orgId}/devices`, {
-                            headers: {
-                                'Authorization': `Bearer ${process.env.Seviora_token}`,
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                    })).then(axios.spread((...responses) => {
-                        let data = responses.map(response => response.data)
-                        console.log(data)
-                    }
-                    ))
-                }
-                catch (err) {
-                    console.log(err)
-                }
-                break;
-        }
-    })
-
+    }
+    )
+    return orgIdList
 }
-// function errorChecker(variable) {
-//     if
-// }
 
-main('Internal').then((data) => {
-    console.log(data)
-})
+async function getDeviceAll(mainOrganization){
+    let org_list = await retrieveOrgList(mainOrganization)
+    console.log(org_list)
+    dotenv.config({path : `../${mainOrganization}.env`})
+        switch (mainOrganization) {
+            case 'Internal':
+            try {
+                // Retrieve token from .env file
+                return axios.all(org_list.map(async (org_id) => {
+                        const options = {
+                            method: 'GET',
+                            url: `https://app.ninjarmm.com/v2/organization/${org_id}/devices`,
+                            headers: {
+                                'Authorization': `Bearer ${process.env.INTERNAL_TOKEN}`,
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                        const response = await axios(options)
+                        return response.data
+                    }
+                ))
+
+
+            }
+            catch (err) {
+                console.log(err)
+            }
+            break;
+            case 'Seviora':
+            try {
+                return axios.all(org_list.map(async (org_id) => {
+                        const options = {
+                            method: 'GET',
+                            url: `https://oc.ninjarmm.com/v2/organization/${org_id}/devices`,
+                            headers: {
+                                'Authorization': `Bearer ${process.env.SEVIORA_TOKEN}`,
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                        const response = await axios(options)
+                        return response.data
+                    }
+                ))
+            }
+            catch (err) {
+                console.log(err)
+            }
+            break;
+        }
+    }
+async function main(mainOrganization) {
+    let devices_obj = await getDeviceAll(mainOrganization)
+    console.log(devices_obj)
+}
+
+main('Seviora')
