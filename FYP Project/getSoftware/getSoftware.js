@@ -1,0 +1,1 @@
+const getDevice = require('../getDevicesAll/getDeviceAll')
