@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node ./getDevicesAll/getDevicesAll.js",
+    "test": "Jest",
     "start": "node index.js"
   },
   "author": "",
