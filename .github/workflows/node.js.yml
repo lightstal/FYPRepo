@@ -13,6 +13,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+        run:
+          working-directory: ./FYP_Project
 
     strategy:
       matrix:
@@ -21,9 +24,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Use Jest and pub get
-      run: pub get
-      working-directory: FYP_Project
+    - name: Use Jest and npm ci
+      run: npm ci
     - name: Run tests
-      run : pub run test
-      working-directory: FYP_Project
+      run : npm test
