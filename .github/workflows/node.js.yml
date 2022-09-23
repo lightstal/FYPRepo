@@ -24,7 +24,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Use Jest and npm ci
+    - name: Install Jest
+      run: npm install --save-dev jest
+    - name: NPM CI
       run: npm ci
     - name: Run tests
       run : npm test
