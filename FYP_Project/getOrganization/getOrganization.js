@@ -53,7 +53,6 @@ const getOrganizationData = async (mainOrganization, token) => {
 async function main(mainOrganization) {
     let list = [];
     await getToken(mainOrganization).then(async (token) => {
-        console.log(token)
         let orgData = await getOrganizationData(mainOrganization, token)
         // Append orgaization name and id to list
         for (let i = 0; i < orgData.length; i++) {
