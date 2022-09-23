@@ -69,10 +69,10 @@ const getToken = async (mainOrganization) => {
 const saveToken = async (mainOrganization) => {
     const token = await getToken(mainOrganization)
     // Store token in .env file
-    fs.open(path.join(__dirname, `../${mainOrganization}.env`), 'w', 666, function( e, id ) {
+    await fs.open(path.join(__dirname, `../${mainOrganization}.env`), 'w', 666, function( e, id ) {
         fs.write( id, `${mainOrganization}_token=${token}` + os.EOL, null, 'utf8', function(){
             fs.close(id, function(){
-                console.log(`Token for ${mainOrganization} saved in ${mainOrganization}.env file`);
+                // console.log(`Token for ${mainOrganization} saved in ${mainOrganization}.env file`);
             });
         });
     });
