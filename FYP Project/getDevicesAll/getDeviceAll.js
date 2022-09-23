@@ -2,7 +2,7 @@ const getOrg = require("../getOrganization/getOrganization");
 const axios = require('axios');
 const dotenv = require('dotenv');
 
-
+let orgIdList = []
 // async function main(mainOrganization) {
 //     let orgIdList = [];
 //     await getOrg(mainOrganization).then((orgData) => {
@@ -13,7 +13,6 @@ const dotenv = require('dotenv');
 
 
 async function retrieveOrgList(mainOrganization) {
-    let orgIdList = [];
     await getOrg(mainOrganization).then(async (orgData) => {
         for (let i = 0; i < orgData.length; i++) {
             orgIdList.push(orgData[i].id)
@@ -75,7 +74,22 @@ async function getDeviceAll(mainOrganization){
     }
 async function main(mainOrganization) {
     let devices_obj = await getDeviceAll(mainOrganization)
-    console.log(devices_obj)
+    // Store in a map
+    let devices_map = new Map()
+    for (let i = 0; i < orgIdList.length; i++) {
+        let temp_list = []
+        for (let j = 0; j < devices_obj[i].length; j++) {
+            temp_list.push(devices_obj[i][j])
+        }
+        devices_map.set(orgIdList[i], temp_list)
+    }
+    return devices_map
 }
 
-main('Seviora')
+main('Seviora').then((devices) => {
+    console.log(devices.keys())
+    console.log(devices.get(3))
+}
+)
+
+module.exports = main
