@@ -19,6 +19,12 @@
   "jest": {
     "setupFilesAfterEnv": [
       "jest-extended/all"
+    ],
+    "moduleDirectories": [
+      "getDevicesAll",
+      "getOrganization",
+      "getSoftware",
+      "tokenRetrieval"
     ]
   }
 }
