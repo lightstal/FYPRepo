@@ -1,14 +1,83 @@
-const deviceData = require("../..//getDevicesByOrg/getSomeDevices");
-const Splunk = require('splunk-sdk');
+const deviceData = require("../../getDevicesByOrg/getSomeDevices");
+const splunkjs = require('splunk-sdk');
+
+let service = new splunkjs.Service({
+        username: "administrator",
+        password: "admin123456",
+    }
+)
+service.login(function(err, success) {
+        if (err) {
+            throw err;
+        } else {
+            console.log('Logged in successfully');
+            console.log(success)
+        }
+    }
+)
 
 
-async function main() {
-    let devices = await deviceData(["1", "2"], "Internal")
-    console.log(devices);
+
+function uploadDataToSplunk(data){
+
+    let indexes = service.indexes()
+    indexes.fetch(function(err,myindexes){
+        console.log("There are "+myindexes.list().length+" indexes");
+        let myindex = myindexes.item("main");
+        for (let i = 0; i < data.length; i++) {
+            myindex.submitEvent([data[i].id, data[i]],
+                {
+                source: "NinjaRMM",
+                sourcetype: "JSON",
+            }, function(err, job) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Submitted job");
+                }
+            }
+            )
+        }
+    }
+    )
 }
 
-main().then(() => {
-    console.log("Done");
+async function main(mainOrganization) {
+    let deviceDataList = []
+    await deviceData([1,2], mainOrganization).then(async (deviceData) => {
+    // console.log(deviceData)
+        for (let i = 0; i < deviceData.length; i++) {
+            for (let j = 0; j < deviceData[i].length; j++) {
+                try{
+                    // change lastContact to GMT+8 format from UNIX timestamp
+                    let lastContact = new Date(deviceData[i][j].lastContact * 1000)
+                    lastContact.setHours(lastContact.getHours() + 8)
+                    deviceData[i][j].lastContact = lastContact.toISOString()
+                }
+                catch(err){
+                    console.log(err)
+                }
+                try{
+                    let createdTIme = new Date(deviceData[i][j].created * 1000)
+                    createdTIme.setHours(createdTIme.getHours() + 8)
+                    deviceData[i][j].created = createdTIme.toISOString()
+                }
+                catch(err){
+                    console.log(err)
+                }
+                // console.log(deviceData[i][j])
+                deviceDataList.push(deviceData[i][j])
+
+            }
+        }
+        // Upload deviceDataList to Splunk
+    }
+    )
+    return deviceDataList
+}
+
+main("Internal").then((deviceDataList) => {
+    uploadDataToSplunk(deviceDataList)
 }
 ).catch((err) => {
     console.log(err);
