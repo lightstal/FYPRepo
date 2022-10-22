@@ -3,11 +3,28 @@
 const axios = require('axios');
 const dotenv = require('dotenv');
 const path = require('path');
+const getOrg = require("../getOrganization/getOrganization");
+
+
+let orgIdList = []
+
+async function retrieveOrgList(mainOrganization) {
+    await getOrg(mainOrganization).then(async (orgData) => {
+            for (let i = 0; i < orgData.length; i++) {
+                orgIdList.push(orgData[i].id)
+            }
+        }
+    )
+    return orgIdList
+}
 
 
 async function getSomeDevices(selectedOrgList, mainOrganization) {
+    let org_list = await retrieveOrgList(mainOrganization)
+
     console.log("Your selected organization list is: ", selectedOrgList)
     dotenv.config({path : path.resolve(__dirname, `../${mainOrganization}.env`)});
+    console.log(path.resolve(__dirname, `../${mainOrganization}.env`))
     console.log(process.env.Internal_token)
     switch (mainOrganization) {
         case 'Internal':
