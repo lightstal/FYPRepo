@@ -1,8 +1,9 @@
 const getOrg = require("../getOrganization/getOrganization");
 const axios = require('axios');
 const dotenv = require('dotenv');
+const path = require('path');
 
-let orgIdList = []
+
 // async function main(mainOrganization) {
 //     let orgIdList = [];
 //     await getOrg(mainOrganization).then((orgData) => {
@@ -11,6 +12,7 @@ let orgIdList = []
 //     return orgIdList[0]
 // }
 
+let orgIdList = []
 
 async function retrieveOrgList(mainOrganization) {
     await getOrg(mainOrganization).then(async (orgData) => {
@@ -25,7 +27,10 @@ async function retrieveOrgList(mainOrganization) {
 async function getDeviceAll(mainOrganization){
     let org_list = await retrieveOrgList(mainOrganization)
     console.log(org_list)
-    dotenv.config({path : `../${mainOrganization}.env`})
+    console.log({path : `../${mainOrganization}.env`})
+
+    dotenv.config({path : path.resolve(__dirname, `../${mainOrganization}.env`)});
+    console.log(process.env.Internal_token)
         switch (mainOrganization) {
             case 'Internal':
             try {
@@ -35,11 +40,14 @@ async function getDeviceAll(mainOrganization){
                             method: 'GET',
                             url: `https://app.ninjarmm.com/v2/organization/${org_id}/devices`,
                             headers: {
-                                'Authorization': `Bearer ${process.env.INTERNAL_TOKEN}`,
+                                'Authorization': `Bearer ${process.env.Internal_token}`,
                                 'Content-Type': 'application/json'
                             }
                         };
-                        const response = await axios(options)
+                        const response = await axios(options).catch((err) => {
+                            console.log(err);
+                        }
+                        )
                         return response.data
                     }
                 ))
@@ -86,10 +94,10 @@ async function main(mainOrganization) {
     return devices_map
 }
 
-main('Seviora').then((devices) => {
-    console.log(devices.keys())
-    console.log(devices.get(3))
-}
-)
+// main('Internal').then((devices) => {
+//     console.log(devices.keys())
+//     console.log(devices.get(3))
+// }
+// )
 
 module.exports = main
