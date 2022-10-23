@@ -1,5 +1,6 @@
 const deviceData = require("../../getDevicesByOrg/getSomeDevices");
 const splunkjs = require('splunk-sdk');
+const softwareData = require("../../getSoftware/getSoftware");
 
 let service = new splunkjs.Service({
         username: "administrator",
@@ -42,9 +43,9 @@ function uploadDataToSplunk(data){
     )
 }
 
-async function main(mainOrganization) {
+async function main(selectedOrgs, mainOrganization) {
     let deviceDataList = []
-    await deviceData([1,2], mainOrganization).then(async (deviceData) => {
+    await deviceData(selectedOrgs, mainOrganization).then(async (deviceData) => {
     // console.log(deviceData)
         for (let i = 0; i < deviceData.length; i++) {
             for (let j = 0; j < deviceData[i].length; j++) {
@@ -70,13 +71,12 @@ async function main(mainOrganization) {
 
             }
         }
-        // Upload deviceDataList to Splunk
     }
     )
     return deviceDataList
 }
 
-main("Internal").then((deviceDataList) => {
+main([12,13], "Internal").then((deviceDataList) => {
     uploadDataToSplunk(deviceDataList)
 }
 ).catch((err) => {
