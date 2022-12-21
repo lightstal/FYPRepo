@@ -1,3 +1,7 @@
+// Written entirely by: Bryan Kor
+// Admin Number : P2043579
+// Copyright 2022, Bryan Kor, All rights reserved.
+
 const getOrg = require("../getOrganization/getOrganization");
 const axios = require('axios');
 const dotenv = require('dotenv');
@@ -101,3 +105,7 @@ async function main(mainOrganization) {
 // )
 
 module.exports = main
+
+// Written entirely by: Bryan Kor
+// Admin Number : P2043579
+// Copyright 2022, Bryan Kor, All rights reserved.
