@@ -1,3 +1,8 @@
+// Written entirely by: Bryan Kor
+// Admin Number : P2043579
+// Copyright 2022, Bryan Kor, All rights reserved.
+
+
 // Import InternalToken from tokenRetrieval Folder
 const getToken = require('../tokenRetrieval/internalToken');
 const axios = require('axios');
@@ -70,3 +75,7 @@ async function main(mainOrganization) {
 
 // main('Internal').then(r => console.log(r))
 module.exports = main
+
+// Written entirely by: Bryan Kor
+// Admin Number : P2043579
+// Copyright 2022, Bryan Kor, All rights reserved.

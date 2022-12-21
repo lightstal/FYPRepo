@@ -1,3 +1,7 @@
+// Written entirely by: Bryan Kor
+// Admin Number : P2043579
+// Copyright 2022, Bryan Kor, All rights reserved.
+
 const request = require('request');
 const path = require('path');
 const fs = require('fs');
@@ -79,3 +83,7 @@ const saveToken = async (mainOrganization) => {
     return token
 }
 module.exports = saveToken
+
+// Written entirely by: Bryan Kor
+// Admin Number : P2043579
+// Copyright 2022, Bryan Kor, All rights reserved.

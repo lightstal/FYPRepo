@@ -1,3 +1,7 @@
+// Written entirely by: Bryan Kor
+// Admin Number : P2043579
+// Copyright 2022, Bryan Kor, All rights reserved.
+
 const axios = require('axios');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -14,7 +18,8 @@ async function getSoftware(deviceDataList, mainOrganization){
             try {
                 // Loop through each device in the deviceDataList and if device.nodeClass === "NMS_Switch" ignore it
                 for (let i = 0; i < deviceDataList.length; i++) {
-                    if (deviceDataList[i].nodeClass === "NMS_Switch" || deviceDataList[i].nodeClass === "NMS_Router"|| deviceDataList[i].nodeClass === "NMS_OTHER" || deviceDataList[i].nodeClass === "NMS_NETWORK_MANAGEMENT_AGENT" || deviceDataList[i].nodeClass === "NMS_PRINTER" || deviceDataList[i].nodeClass === "NMS_FIREWALL" || deviceDataList[i].nodeClass === "NMS_SERVER" || deviceDataList[i].nodeClass === "NMS_STORAGE" || deviceDataList[i].nodeClass === "NMS_SWITCH" || deviceDataList[i].nodeClass === "NMS_ROUTER" || deviceDataList[i].nodeClass === "NMS_OTHER" || deviceDataList[i].nodeClass === "NMS_SWITCH") {
+                    // Use NMS_LIST to check if device.nodeClass is in the list
+                    if (NMS_LIST.includes(deviceDataList[i].nodeClass)) {
                         console.log("Device is a switch, ignoring")
                     } else {
                         const options = {
@@ -42,7 +47,8 @@ async function getSoftware(deviceDataList, mainOrganization){
                 // Loop through each device in the deviceDataList and if device.nodeClass === "NMS_Switch" ignore it
                 for (let i = 0; i < deviceDataList.length; i++) {
                     console.log(deviceDataList[i])
-                    if (deviceDataList[i].nodeClass === "NMS_Switch" || deviceDataList[i].nodeClass === "NMS_Router"|| deviceDataList[i].nodeClass === "NMS_OTHER" || deviceDataList[i].nodeClass === "NMS_NETWORK_MANAGEMENT_AGENT" || deviceDataList[i].nodeClass === "NMS_PRINTER" || deviceDataList[i].nodeClass === "NMS_SWITCH") {
+                    // Use NMS_LIST to check if device.nodeClass is in the list
+                    if (NMS_LIST.includes(deviceDataList[i].nodeClass)) {
                         console.log("Device is a switch, ignoring")
 
                     }else {
@@ -71,3 +77,7 @@ async function getSoftware(deviceDataList, mainOrganization){
 }
 
 module.exports = getSoftware
+
+// Written entirely by: Bryan Kor
+// Admin Number : P2043579
+// Copyright 2022, Bryan Kor, All rights reserved.
