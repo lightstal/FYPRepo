@@ -7,7 +7,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 let deviceDataList = []
-let NMS_LIST = ["NMS_Switch", "NMS_Router", "NMS_OTHER", "NMS_NETWORK_MANAGEMENT_AGENT", "NMS_PRINTER", "NMS_FIREWALL", "NMS_SERVER", "NMS_STORAGE", "NMS_SWITCH", "NMS_ROUTER", "NMS_OTHER", "NMS_SWITCH"]
+let NMS_LIST = ["NMS_Switch", "NMS_Router", "NMS_OTHER", "NMS_NETWORK_MANAGEMENT_AGENT", "NMS_PRINTER", "NMS_FIREWALL", "NMS_SERVER", "NMS_STORAGE", "NMS_SWITCH", "NMS_ROUTER", "NMS_OTHER", "NMS_SWITCH", "NMS_VIRTUAL_MACHINE","CLOUD_MONITOR_TARGET"]
 
 async function getSoftware(deviceDataList, mainOrganization){
     dotenv.config({path : path.resolve(__dirname, `../${mainOrganization}.env`)});
@@ -20,7 +20,7 @@ async function getSoftware(deviceDataList, mainOrganization){
                 for (let i = 0; i < deviceDataList.length; i++) {
                     // Use NMS_LIST to check if device.nodeClass is in the list
                     if (NMS_LIST.includes(deviceDataList[i].nodeClass)) {
-                        console.log("Device is a switch, ignoring")
+                        console.log("Device is in NMS Filter List, ignoring")
                     } else {
                         const options = {
                             method: 'GET',

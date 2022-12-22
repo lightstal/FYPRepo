@@ -45,8 +45,10 @@ const year = currentTime.getFullYear();
 const roundedTime = `${year}-${month}-${day}T${roundedHours}:00:00.000Z`;
 const formattedRoundedTime = `${day}-${month}-${year} ${roundedHours}:00`;
 
-const timestamp = Date.parse(roundedTime);
-const utcTime = new Date(timestamp);
+// const timestamp = Date.parse(roundedTime);
+// const utcTime = new Date(timestamp);
+
+const utcTime = new Date(`${month} ${day}, ${year} ${roundedHours}:00`).toUTCString();
 
 
 // console.log("There are "+myindexes.list().length+" indexes");
@@ -76,6 +78,11 @@ function uploadDataToSplunk(data){
     for (let i = 0; i < data.length; i++) {
         // console.log(data)
         let indexName = data[i].orgName.toLowerCase().replace(/\s/g, '_')
+
+        //Strip out special characters
+        indexName = indexName.replace(/[^a-zA-Z0-9]/g, '')
+        //Strip "(" and ")"
+        indexName = indexName.replace(/[\(\)]/g, '')
         //Don't push duplicate index name to tempIndexList
         if(!tempIndexList.includes(indexName)){
             tempIndexList.push(indexName)
@@ -87,7 +94,11 @@ function uploadDataToSplunk(data){
     myindexes.fetch(function(err,myindexes){
     for (let i = 0; i < data.length; i++) {
         let indexName = data[i].orgName.toLowerCase().replace(/\s/g, '_')
+        indexName = indexName.replace(/[^a-zA-Z0-9]/g, '')
+        //Strip "(" and ")"
+        indexName = indexName.replace(/[\(\)]/g, '')
         let myindex = myindexes.item(indexName);
+
         // console.log(myindex)
         myindex.submitEvent([data[i].id, data[i]],
             {
@@ -111,14 +122,23 @@ function checkIndexExists(indexName){
     for (let i = 0; i < indexName.length; i++) {
         // Convert indexName to lowercase and replace spaces with underscore and store in list
         let tempIndexName = indexName[i].toLowerCase().replace(/\s/g, '_')
+        //Strip out special characters
+        tempIndexName = tempIndexName.replace(/[^a-zA-Z0-9]/g, '_')
+        //Strip "(" and ")"
+        tempIndexName = tempIndexName.replace(/[\(\)]/g, '')
+
 
         // Check if index exists
         let splunkIndex = service.indexes()
         // Create index if it does not exist in splunk
-        console.log(typeof(tempIndexName))
         splunkIndex.create(`${tempIndexName}`, {}, function(err, myindex) {
             if (err) {
-                console.log(err);
+                // If index already exists, do nothing
+                if (err.status === 409) {
+                    console.log(`Index ${tempIndexName} already exists`);
+                }else {
+                    console.log(err);
+                }
             } else {
                 console.log("Created index: " + `${tempIndexName}`);
             }
@@ -163,6 +183,7 @@ async function main(selectedOrgs, mainOrganization) {
                                 // Add roundedTime to each object
                                 deviceData[z][i][j].SplunkroundedTime = formattedRoundedTime
                                 deviceData[z][i][j].SplunkutcTime = utcTime
+                                // console.log(utcTime)
                             }
                             catch (e) {
                                 console.log(e)
@@ -174,6 +195,8 @@ async function main(selectedOrgs, mainOrganization) {
                     }
                 }
             }
+            // Print which orgs are done
+
             return deviceDataList
         }
     )
@@ -195,19 +218,16 @@ async function main(selectedOrgs, mainOrganization) {
 
 }
 
-
-main([6,17], "Internal").then((deviceDataList) => {
-    //Check if index exists based on number of orgs
-    // for (let i = 0; i < orgName.length; i++) {
-    //     console.log(orgName[i])
-    //     // checkIndexExists(orgName[i])
-    // }
+//[1,2,3,6,10,11,13,14,15,16,17,20]
+main([1,2,3,6,10,11,13,14,15,16,17,20,21,23,25,26,28,29,31,32,33,35], "Internal").then((deviceDataList) => {
     uploadDataToSplunk(deviceDataList)
-}
-).catch((err) => {
+    console.log("All organizations processed")
+}).catch((err) => {
     console.log(err);
-}
-)
+})
+
+//export main function for testing
+module.exports = main
 
 // Written entirely by: Bryan Kor
 // Admin Number : P2043579

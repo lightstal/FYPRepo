@@ -27,6 +27,7 @@ async function retrieveOrgList(mainOrganization) {
 
 async function getSomeDevices(selectedOrgList, mainOrganization) {
     let org_list = await retrieveOrgList(mainOrganization)
+    console.log(org_list)
 
     console.log("Your selected organization list is: ", selectedOrgList)
     // print org name based on org id
