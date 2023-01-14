@@ -86,10 +86,12 @@ async function getDeviceAll(mainOrganization){
     }
 async function main(mainOrganization) {
     let devices_obj = await getDeviceAll(mainOrganization)
-    // Store in a map
+    // Store in a map for easy access to data
     let devices_map = new Map()
+    // Iterate through each organization
     for (let i = 0; i < orgIdList.length; i++) {
         let temp_list = []
+        // Iterate through each device in each organization
         for (let j = 0; j < devices_obj[i].length; j++) {
             temp_list.push(devices_obj[i][j])
         }

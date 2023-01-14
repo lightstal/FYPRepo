@@ -12,6 +12,7 @@ let service = new splunkjs.Service({
     }
 )
 let orgName = []
+//Login to splunk
 service.login(function(err, success) {
         if (err) {
             throw err;
@@ -51,22 +52,6 @@ const formattedRoundedTime = `${day}-${month}-${year} ${roundedHours}:00`;
 const utcTime = new Date(`${month} ${day}, ${year} ${roundedHours}:00`).toUTCString();
 
 
-// console.log("There are "+myindexes.list().length+" indexes");
-// let myindex = myindexes.item("main");
-// for (let i = 0; i < data.length; i++) {
-//     myindex.submitEvent([data[i].id, data[i]],
-//         {
-//         source: "NinjaRMM",
-//         sourcetype: "JSON",
-//     }, function(err, job) {
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             console.log("Submitted job with SID: " + job);
-//         }
-//     }
-//     )
-// }
 
 function uploadDataToSplunk(data){
     let myindexes = service.indexes()
@@ -128,7 +113,7 @@ function checkIndexExists(indexName){
         tempIndexName = tempIndexName.replace(/[\(\)]/g, '')
 
 
-        // Check if index exists
+        // Retrieve list of existing indexes in splunk
         let splunkIndex = service.indexes()
         // Create index if it does not exist in splunk
         splunkIndex.create(`${tempIndexName}`, {}, function(err, myindex) {
@@ -195,8 +180,6 @@ async function main(selectedOrgs, mainOrganization) {
                     }
                 }
             }
-            // Print which orgs are done
-
             return deviceDataList
         }
     )
@@ -210,10 +193,6 @@ async function main(selectedOrgs, mainOrganization) {
             }
         }
     )
-
-
-    // use function to upload data to splunk
-
     return deviceDataList
 
 }
