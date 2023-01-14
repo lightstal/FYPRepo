@@ -9,8 +9,6 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 
 
-//read token from .env file
-
 
 // await InternalToken('Organization')
 const getOrganizationData = async (mainOrganization, token) => {
