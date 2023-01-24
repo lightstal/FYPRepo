@@ -35,6 +35,7 @@ async function getSoftware(deviceDataList, mainOrganization){
                         })
                         response.data.deviceId = deviceDataList[i].id
                         deviceDataList[i].software = response.data
+                        // Check if device has Google Chrome installed
                     }
                 }
                 return deviceDataList

@@ -3,25 +3,11 @@
 // Copyright 2022, Bryan Kor, All rights reserved.
 
 const deviceData = require("../../getDevicesByOrg/getSomeDevices");
-const splunkjs = require('splunk-sdk');
 const softwareData = require("../../getSoftware/getSoftware");
 
-let service = new splunkjs.Service({
-        username: "administrator",
-        password: "admin123456",
-    }
-)
+
 let orgName = []
-//Login to splunk
-service.login(function(err, success) {
-        if (err) {
-            throw err;
-        } else {
-            console.log('Logged in successfully');
-            console.log(success)
-        }
-    }
-)
+
 
 const currentTime = new Date();
 
@@ -53,83 +39,7 @@ const utcTime = new Date(`${month} ${day}, ${year} ${roundedHours}:00`).toUTCStr
 
 
 
-function uploadDataToSplunk(data){
-    let myindexes = service.indexes()
-    // Use orgName in data to create index with checkIndexExists()
-    // If index exists, use that index to submit data
-    // If index does not exist, create index and then submit data
-    // console.log("There are "+indexes.list().length+" indexes");
-    let tempIndexList = []
-    for (let i = 0; i < data.length; i++) {
-        // console.log(data)
-        let indexName = data[i].orgName.toLowerCase().replace(/\s/g, '_')
 
-        //Strip out special characters
-        indexName = indexName.replace(/[^a-zA-Z0-9]/g, '')
-        //Strip "(" and ")"
-        indexName = indexName.replace(/[\(\)]/g, '')
-        //Don't push duplicate index name to tempIndexList
-        if(!tempIndexList.includes(indexName)){
-            tempIndexList.push(indexName)
-        }
-    }
-    // Use checkIndexExists() to check if index exists
-    checkIndexExists(tempIndexList)
-    // Submit data to splunk using indexName if matches orgName
-    myindexes.fetch(function(err,myindexes){
-    for (let i = 0; i < data.length; i++) {
-        let indexName = data[i].orgName.toLowerCase().replace(/\s/g, '_')
-        indexName = indexName.replace(/[^a-zA-Z0-9]/g, '')
-        //Strip "(" and ")"
-        indexName = indexName.replace(/[\(\)]/g, '')
-        let myindex = myindexes.item(indexName);
-
-        // console.log(myindex)
-        myindex.submitEvent([data[i].id, data[i]],
-            {
-            source: "NinjaRMM",
-            sourcetype: "JSON",
-        }, function(err, job) {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("Submitted job with SID: " + job);
-            }
-        }
-        )
-    }
-    })
-}
-
-// Check if index "indexName" exists in splunk if not create it
-function checkIndexExists(indexName){
-    // Loop through indexName list
-    for (let i = 0; i < indexName.length; i++) {
-        // Convert indexName to lowercase and replace spaces with underscore and store in list
-        let tempIndexName = indexName[i].toLowerCase().replace(/\s/g, '_')
-        //Strip out special characters
-        tempIndexName = tempIndexName.replace(/[^a-zA-Z0-9]/g, '_')
-        //Strip "(" and ")"
-        tempIndexName = tempIndexName.replace(/[\(\)]/g, '')
-
-
-        // Retrieve list of existing indexes in splunk
-        let splunkIndex = service.indexes()
-        // Create index if it does not exist in splunk
-        splunkIndex.create(`${tempIndexName}`, {}, function(err, myindex) {
-            if (err) {
-                // If index already exists, do nothing
-                if (err.status === 409) {
-                    console.log(`Index ${tempIndexName} already exists`);
-                }else {
-                    console.log(err);
-                }
-            } else {
-                console.log("Created index: " + `${tempIndexName}`);
-            }
-        })
-    }
-}
 async function main(selectedOrgs, mainOrganization) {
     let deviceDataList = []
     // Get device data and org name list
@@ -197,13 +107,12 @@ async function main(selectedOrgs, mainOrganization) {
 
 }
 
-//[1,2,3,6,10,11,13,14,15,16,17,20]
-main([1,2,3,6,10,11,13,14,15,16,17,20,21,23,25,26,28,29,31,32,33,35], "Internal").then((deviceDataList) => {
-    uploadDataToSplunk(deviceDataList)
-    console.log("All organizations processed")
-}).catch((err) => {
-    console.log(err);
-})
+// main([1,2,3,6,10,11,13,14,15,16,17,20,21,23,25,26,28,29,31,32,33,35], "Internal").then((deviceDataList) => {
+//     uploadDataToSplunk(deviceDataList)
+//     console.log("All organizations processed")
+// }).catch((err) => {
+//     console.log(err);
+// })
 
 //export main function for testing
 module.exports = main
